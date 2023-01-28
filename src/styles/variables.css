@@ -1,0 +1,17 @@
+:root {
+	--spacing-xs: 1rem;
+	--spacing-sm: 2rem;
+	--spacing-md: 3rem;
+	--spacing-lg: 4rem;
+	--spacing-xl: 6rem;
+}
+
+html {
+	font-size: 62.5%;
+}
+
+@media screen and (max-width: 992px) {
+	html {
+		font-size: 50%;
+	}
+}
