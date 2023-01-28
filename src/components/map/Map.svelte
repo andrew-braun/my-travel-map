@@ -2,6 +2,9 @@
 	import { onMount } from "svelte";
 	import mapboxgl, { Map } from "mapbox-gl";
 	import "mapbox-gl/dist/mapbox-gl.css";
+
+	import type { MapboxMap } from "ts/maps";
+
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
 
 	// Props
@@ -12,30 +15,25 @@
 	const mapAccessToken = PUBLIC_MAPBOX_API_KEY;
 
 	// Initialize map
-	let map: Map;
+	let mapInstance: Map;
 
 	onMount(async () => {
 		mapboxgl.accessToken = mapAccessToken;
-		map = new Map({
+		mapInstance = new Map({
 			container: "map-container",
 			center,
 			zoom,
 			style: `mapbox://styles/mapbox/${style}`,
-			projection: "winkelTripel"
+			projection: { name: "winkelTripel" }
 		});
 
-		map.on("load", () => {
+		mapInstance.on("load", () => {
 			// Resize map to fit container
-			map.resize();
-			map.setFog({
-				color: "rgb(186, 210, 235)", // Lower atmosphere
-				"high-color": "rgb(36, 92, 223)", // Upper atmosphere
-				"horizon-blend": 0.02, // Atmosphere thickness (default 0.2 at low zooms)
-				"space-color": "rgb(11, 11, 25)", // Background color
-				"star-intensity": 0.6 // Background star brightness (default 0.35 at low zoooms )
-			});
+			mapInstance.resize();
 		});
 	});
+
+	export let map: MapboxMap;
 </script>
 
 <div class="map-container" id="map-container" />
