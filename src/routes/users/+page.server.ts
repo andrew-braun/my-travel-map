@@ -1,5 +1,5 @@
-import { users } from "~/lib/data/users";
-import type { User } from "~/ts/users";
+import { users } from "lib/data/users";
+import type { User } from "ts/users";
 
 export function load() {
 	return {

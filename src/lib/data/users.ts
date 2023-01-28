@@ -1,4 +1,4 @@
-import type { User } from "~/ts/users";
+import type { User } from "ts/users";
 
 export const users: User[] = [
 	{ name: "AndriB", countries: ["US", "GE", "SK", "TH"] },
