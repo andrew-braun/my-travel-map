@@ -1,5 +1,5 @@
-export interface MapboxMap {
-	center: [number, number];
-	zoom: number;
-	style: string;
+export interface MapType {
+	center: [number, number] | undefined;
+	zoom: number | undefined;
+	style: string | undefined;
 }
