@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { supabase } from "lib/helpers/database/supabaseClient.ts";
-
+	// import { supabase } from "lib/helpers/database/supabaseClient.ts";
+	import { page } from "$app/stores";
 	let loading = false;
 	let email: string;
 
 	const handleLogin = async () => {
 		try {
 			loading = true;
-			const { error } = await supabase.auth.signInWithOtp({ email });
+			const { error } = await $page.data.supabase.auth.signInWithOtp({ email });
 			if (error) throw error;
 			alert("Check your email for the login link!");
 		} catch (error) {
