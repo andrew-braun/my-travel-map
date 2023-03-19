@@ -1,11 +1,11 @@
 <script lang="ts">
 	// import { onMount } from "svelte";
-	import Map from "components/map/Map.svelte";
+	import MapContainer from "components/map/MapContainer.svelte";
 	// import { page } from "$app/stores";
 
 	// import type { MapType } from "ts/maps";
 </script>
 
 <div class="map-container">
-	<Map />
+	<MapContainer />
 </div>
