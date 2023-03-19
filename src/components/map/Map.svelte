@@ -9,6 +9,7 @@
 	import type { Country, CountryId } from "ts/countries";
 	import "mapbox-gl/dist/mapbox-gl.css";
 	import { visited } from "stores/countries";
+	import { getUrlSearchParam } from "lib/utils/browser";
 
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
 
@@ -27,18 +28,18 @@
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
 		// Update the visitedCountries URL param with the new list of countries
-		const visitedCountryParams = $page.url.searchParams.get("visitedCountries");
 		$page.url.searchParams.set("visitedCountries", countries.join(","));
 
-		console.log(countries);
 		if (!browser) {
 			return;
 		}
 
 		// If there are countries in the store, update the URL search params
+		const visitedCountryParam = getUrlSearchParam("visitedCountries");
+
 		if (!!countries.length) {
 			goto(`?${$page.url.searchParams.toString()}`);
-		} else if (!countries.length && !visitedCountryParams) {
+		} else if (!countries.length && !visitedCountryParam) {
 			goto($page.url.origin);
 		}
 	});
@@ -58,15 +59,20 @@
 	onMount(async () => {
 		// Access browser URL search params and, if they contain a list of visited countries, set the visitedCountries store to that list
 		function setVisitedCountriesFromSearchParams() {
-			const visitedCountryParams = $page.url.searchParams.get("visitedCountries");
-			if (visitedCountryParams) {
-				visited.set(visitedCountryParams.split(","));
+			// Built-in svelte $page.url.searchParams object only works for set, not get
+			const visitedCountryParam = getUrlSearchParam("visitedCountries");
+
+			if (visitedCountryParam) {
+				/* Also set the visitedCountries array to the list of countries in the URL search params,
+				 ** since one is the local variable and the other is the writable store
+				 */
+
+				visitedCountries = visitedCountryParam.split(",");
+				visited.set(visitedCountryParam.split(","));
 			}
 		}
 
 		setVisitedCountriesFromSearchParams();
-
-		console.log($page.url.searchParams.get("visitedCountries"));
 
 		mapboxgl.accessToken = mapAccessToken;
 		map = new Map({
@@ -134,6 +140,23 @@
 				},
 				"country-label"
 			);
+
+			/* Get all previously selected countries from the store,
+			 ** drawn from URL search params and/or database,
+			 ** and set their feature states to "selected"
+			 */
+			visited.subscribe((countries) => {
+				for (let country of countries) {
+					map.setFeatureState(
+						{
+							source: "country-boundaries",
+							sourceLayer: "country_boundaries",
+							id: country
+						},
+						{ selected: true, visited: true }
+					);
+				}
+			});
 
 			/* Create hover effects by manipulating feature states */
 			map.on("mousemove", "country-boundaries-hover", (event) => {
@@ -230,6 +253,10 @@
 						{ selected: false, visited: false }
 					);
 				}
+
+				/* Once local variable is finished with updates, push final result
+				 ** to the writable store
+				 */
 				visited.update((countries) => [...visitedCountries]);
 			});
 		});
