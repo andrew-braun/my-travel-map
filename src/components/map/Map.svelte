@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { page } from "$app/stores";
+	import { goto } from "$app/navigation";
+	import { browser } from "$app/environment";
 	import mapboxgl, { Map } from "mapbox-gl";
 	// import type { MapboxGeoJSONFeature } from "mapbox-gl";
 	import type { MapboxCountryBoundaryFeatureProperties } from "ts/maps";
-	import type { Country } from "ts/countries";
+	import type { Country, CountryId } from "ts/countries";
 	import "mapbox-gl/dist/mapbox-gl.css";
 	import { visited } from "stores/countries";
+
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
 
 	// Props
@@ -18,10 +22,25 @@
 	// Initialize map
 	let map: Map;
 	let hoveredCountryId: string | number | undefined | null = null;
-	let visitedCountries: Country[] = [];
+	let visitedCountries: CountryId[] = [];
 
+	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
+		// Update the visitedCountries URL param with the new list of countries
+		const visitedCountryParams = $page.url.searchParams.get("visitedCountries");
+		$page.url.searchParams.set("visitedCountries", countries.join(","));
+
 		console.log(countries);
+		if (!browser) {
+			return;
+		}
+
+		// If there are countries in the store, update the URL search params
+		if (!!countries.length) {
+			goto(`?${$page.url.searchParams.toString()}`);
+		} else if (!countries.length && !visitedCountryParams) {
+			goto($page.url.origin);
+		}
 	});
 
 	// Centralize map colors
@@ -37,6 +56,18 @@
 	$: currentSelectionColor = colors[selectionMode];
 
 	onMount(async () => {
+		// Access browser URL search params and, if they contain a list of visited countries, set the visitedCountries store to that list
+		function setVisitedCountriesFromSearchParams() {
+			const visitedCountryParams = $page.url.searchParams.get("visitedCountries");
+			if (visitedCountryParams) {
+				visited.set(visitedCountryParams.split(","));
+			}
+		}
+
+		setVisitedCountriesFromSearchParams();
+
+		console.log($page.url.searchParams.get("visitedCountries"));
+
 		mapboxgl.accessToken = mapAccessToken;
 		map = new Map({
 			container: "map-container",
@@ -156,6 +187,9 @@
 			});
 
 			map.on("click", "country-boundaries-select", (event) => {
+				/* If the user clicks on a country, add it to the visitedCountries array
+				 ** and set the visited writable store to the new array
+				 */
 				if (!event?.features) {
 					return;
 				}
@@ -166,12 +200,13 @@
 					properties as MapboxCountryBoundaryFeatureProperties;
 
 				const visitedCountriesIndex = visitedCountries.findIndex(
-					(country) => country.id === iso_3166_1
+					(country) => country === iso_3166_1
 				);
 
+				// Only add the country to the visitedCountries array if it's not already there
+				// and set the feature state to visited
 				if (visitedCountriesIndex === -1) {
-					visitedCountries.push({ id, iso_3166_1, iso_3166_1_alpha_3 });
-					visited.update((countries) => [...countries, { id, iso_3166_1, iso_3166_1_alpha_3 }]);
+					visitedCountries.push(id);
 
 					map.setFeatureState(
 						{
@@ -182,8 +217,7 @@
 						{ selected: true, visited: true }
 					);
 				}
-				console.log(visitedCountries);
-
+				// If the country is already in the visitedCountries array, remove it
 				if (visitedCountriesIndex !== -1) {
 					visitedCountries.splice(visitedCountriesIndex, 1);
 
@@ -196,6 +230,7 @@
 						{ selected: false, visited: false }
 					);
 				}
+				visited.update((countries) => [...visitedCountries]);
 			});
 		});
 	});

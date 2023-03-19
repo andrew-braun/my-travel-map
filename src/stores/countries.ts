@@ -1,4 +1,4 @@
 import { writable } from "svelte/store";
-// import type { Country } from "ts/countries"
+import type { CountryId } from "ts/countries";
 
-export const visited = writable([]);
+export const visited = writable<CountryId[]>([]);
