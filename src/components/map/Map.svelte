@@ -3,8 +3,9 @@
 	import mapboxgl, { Map } from "mapbox-gl";
 	// import type { MapboxGeoJSONFeature } from "mapbox-gl";
 	import type { MapboxCountryBoundaryFeatureProperties } from "ts/maps";
+	import type { Country } from "ts/countries";
 	import "mapbox-gl/dist/mapbox-gl.css";
-
+	import { visited } from "stores/countries";
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
 
 	// Props
@@ -17,11 +18,11 @@
 	// Initialize map
 	let map: Map;
 	let hoveredCountryId: string | number | undefined | null = null;
-	let visitedCountries: {
-		id: string | number | undefined;
-		iso_3166_1: string;
-		iso_3166_1_alpha_3: string;
-	}[] = [];
+	let visitedCountries: Country[] = [];
+
+	visited.subscribe((countries) => {
+		console.log(countries);
+	});
 
 	// Centralize map colors
 	let colors: { hover: string; visited: string } = {
@@ -170,6 +171,7 @@
 
 				if (visitedCountriesIndex === -1) {
 					visitedCountries.push({ id, iso_3166_1, iso_3166_1_alpha_3 });
+					visited.update((countries) => [...countries, { id, iso_3166_1, iso_3166_1_alpha_3 }]);
 
 					map.setFeatureState(
 						{
