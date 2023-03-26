@@ -50,17 +50,19 @@
 <div class="combobox">
 	<input
 		placeholder="Search"
+		class={`combobox-input ${active ? "active-input" : ""}`}
 		on:input={(event) => handleSearchInput(event)}
 		on:click={() => (active = true)}
 		on:focusin={() => (active = true)}
-		on:focusout={() => (active = false)}
 		on:keydown={(event) => handleKeydown(event)}
 	/>
 
-	<ul class={`select-list ${active ? "active" : ""}`}>
+	<ul class={`select-list list-style-1 ${active ? "active" : ""}`}>
 		{#each filteredResults as item, index}
 			<li
-				class="select-list-item {index === selectedItemIndex ? 'selected' : ''}"
+				class="select-list-item selectable-list-item {index === selectedItemIndex
+					? 'selected'
+					: ''}"
 				on:click={(event) => handleDropdownItemSelect(event, item.id)}
 				on:keydown={(event) => handleDropdownItemKeydown(event)}
 				data-index={index}
@@ -74,21 +76,35 @@
 <style lang="scss">
 	.combobox {
 		position: relative;
+		.combobox-input {
+			transition: var(--ease-in-out-med);
+			&.active-input {
+				border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+			}
+		}
+
 		.select-list {
 			display: none;
 			position: absolute;
-			top: 100%;
+			top: 45%;
 			left: 0;
 			z-index: 1;
 			width: 100%;
 			max-height: 200px;
 			border: 1px solid #ccc;
-			border-radius: 0.25rem;
-			overflow-y: auto;
+			border-radius: var(--border-radius-sm);
 			background: #fff;
+			overflow-y: auto;
 
 			&.active {
 				display: block;
+				border-top: none;
+				border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+			}
+
+			.select-list-item {
+				padding: var(--spacing-xs) var(--spacing-sm);
+				opacity: 0.9;
 			}
 		}
 	}

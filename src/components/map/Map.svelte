@@ -28,7 +28,11 @@
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
 		// Update the visitedCountries URL param with the new list of countries
-		$page.url.searchParams.set("visitedCountries", countries.join(","));
+		visitedCountries = countries;
+
+		countries.length
+			? $page.url.searchParams.set("visitedCountries", countries.join(","))
+			: $page.url.searchParams.delete("visitedCountries");
 
 		if (!browser) {
 			return;
@@ -36,10 +40,12 @@
 
 		// If there are countries in the store, update the URL search params
 		const visitedCountryParam = getUrlSearchParam("visitedCountries");
+		const searchParams = new URLSearchParams($page.url.searchParams.toString());
 
 		if (!!countries.length) {
 			goto(`?${$page.url.searchParams.toString()}`);
 		} else if (!countries.length && !visitedCountryParam) {
+			searchParams.delete("visitedCountries");
 			goto($page.url.origin);
 		}
 	});
@@ -147,6 +153,7 @@
 			 */
 			visited.subscribe((countries) => {
 				for (let country of countries) {
+					// Set the feature state to "selected" and "visited" for each country in the store
 					map.setFeatureState(
 						{
 							source: "country-boundaries",
@@ -154,6 +161,27 @@
 							id: country
 						},
 						{ selected: true, visited: true }
+					);
+				}
+
+				// Get all countries that are currently selected but not in the store
+				const mapboxFeatureState = map.queryRenderedFeatures(undefined, {
+					layers: ["country-boundaries-select"]
+				});
+
+				const unselected = mapboxFeatureState
+					.filter((feature) => feature.state.selected === true && !countries.includes(feature.id))
+					.map((feature) => feature.id);
+
+				// Reset all feature states for countries that are currently selected but not in the store
+				for (let country of unselected) {
+					map.setFeatureState(
+						{
+							source: "country-boundaries",
+							sourceLayer: "country_boundaries",
+							id: country
+						},
+						{ selected: false, visited: false }
 					);
 				}
 			});

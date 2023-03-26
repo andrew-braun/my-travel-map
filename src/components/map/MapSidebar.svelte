@@ -32,14 +32,6 @@
 		visitedCountries = countries;
 	});
 
-	// State of item selection
-	let selectedItemIndex = 0;
-	$: selectedListItem = browser
-		? document.querySelector(`.select-list-item[data-index="${selectedItemIndex}"]`)
-		: null;
-
-	// Handle selection
-
 	const handleComboboxItemSelect = (event: any, countryCode: string) => {
 		// Add the selected country to the visitedCountries array
 		visitedCountries.push(countryCode);
@@ -51,27 +43,18 @@
 		});
 	};
 
-	const handleCountryDropdownKeydown = (event: any) => {
-		// Handle keyboard navigation and selection
+	function deleteListItem(id: string) {
+		visitedCountries = visitedCountries.filter((country) => country !== id);
 
-		if (event.key === "ArrowDown") {
-			selectedItemIndex += 1;
-		} else if (event.key === "ArrowUp") {
-			selectedItemIndex -= 1;
-		}
+		visited.set(Array.from(new Set([...visitedCountries])));
+	}
 
-		if (selectedListItem) {
-			(selectedListItem as HTMLElement).focus();
-		}
-
-		// else if (event.key === "Enter") {
-
-		// }
+	const handleListItemDeleteClick = (event: Event, id: string) => {
+		console.log(id);
+		deleteListItem(id);
 	};
 
-	const handleCountryDropdownItemKeydown = (event: any) => {
-		// console.log(event.key);
-	};
+	const handleListItemDeleteKeydown = (event: Event, id: string) => {};
 </script>
 
 <div class="map-sidebar">
@@ -82,10 +65,26 @@
 	<div class="data">
 		<p>Visited: {visitedCountries.length}</p>
 	</div>
-	<ul>
+	<ul class="location-list list-style-1">
 		{#each visitedCountries as country}
 			{#if country}
-				<li>{countryData[country].country_name}</li>
+				<li class="location-item selectable-list-item">
+					<span>{countryData[country].country_name}</span>
+					<span
+						class="delete"
+						on:click={(event) => {
+							if (!country) {
+								return;
+							}
+							handleListItemDeleteClick(event, countryData[country].iso2);
+						}}
+						on:keydown={(event) => {
+							if (!country) {
+								return;
+							}
+						}}>X</span
+					>
+				</li>
 			{/if}
 		{/each}
 	</ul>
@@ -93,8 +92,25 @@
 
 <style lang="scss">
 	.map-sidebar {
+		padding: 0 var(--spacing-md);
 		.search {
 			position: static;
+		}
+		.data {
+			padding-left: var(--spacing-xxs);
+		}
+		.location-list {
+			padding-left: var(--spacing-xxs);
+
+			.location-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				.delete {
+					cursor: pointer;
+				}
+			}
 		}
 	}
 </style>

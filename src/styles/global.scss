@@ -10,7 +10,7 @@ html {
 
 :root {
 	--spacing-xxs: .2rem;
-	--spacing-xs: .4rem;
+	--spacing-xs: .6rem;
 	--spacing-sm: 1rem;
 	--spacing-md: 1.6rem;
 	--spacing-lg: 2.2rem
@@ -28,6 +28,8 @@ html {
 
 	--body-text-color: hsla( 0, 0%, 15%, 0.95);
 	--text-highlight-color: hsla( 0, 0%, 95%, 0.95);
+
+	--ease-in-out-md: all 0.3s ease-in-out;
 	
 }
 
@@ -62,7 +64,17 @@ input {
 	}
 }
 
-.select-list-item {
+.list-style-1 {
+	padding: 0;
+	list-style: none;
+
+	li {
+		padding: var(--spacing-xxs);
+
+	}
+}
+
+.selectable-list-item {
 	padding: var(--spacing-xs);
 
 	&:hover, &:focus, &:active, &.selected {
