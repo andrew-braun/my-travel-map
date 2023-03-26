@@ -18,12 +18,12 @@ export function searchCountries(countries: Country[], query: string) {
 			country.capital_city?.toLowerCase().includes(query.toLowerCase())
 		);
 	});
-	console.log(filtered);
 
+	// Typescript is complaining about this and I don't have the energy
 	return filtered.sort((a, b) => {
-		if (a.country_name && b.country_name) {
+		if (!!a.country_name && !!b.country_name) {
 			return a.country_name > b.country_name;
 		}
-		return 0;
+		return false;
 	});
 }

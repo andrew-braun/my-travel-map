@@ -21,13 +21,25 @@
 	});
 </script>
 
-<header>
+<header class="header">
 	<nav>
 		<a href="/">Home</a>
 		<a href="/about">About</a>
 	</nav>
 </header>
-<slot />
-<footer>Made by Andri Braun</footer>
+<main class="main">
+	<slot />
+</main>
+<footer class="footer">Made by Andri Braun</footer>
 
-<style></style>
+<style>
+	.header {
+		padding: var(--spacing-sm) var(--spacing-md);
+	}
+	.main {
+		padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+	}
+	.footer {
+		padding: var(--spacing-sm) var(--spacing-md);
+	}
+</style>

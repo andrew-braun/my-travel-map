@@ -6,7 +6,7 @@
 	import mapboxgl, { Map } from "mapbox-gl";
 	// import type { MapboxGeoJSONFeature } from "mapbox-gl";
 	import type { MapboxCountryBoundaryFeatureProperties } from "ts/maps";
-	import type { Country, CountryId } from "ts/countries";
+	import type { CountryId } from "ts/countries";
 	import "mapbox-gl/dist/mapbox-gl.css";
 	import { visited } from "stores/countries";
 	import { getUrlSearchParam } from "lib/utils/browser";

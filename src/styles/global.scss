@@ -65,9 +65,10 @@ input {
 .select-list-item {
 	padding: var(--spacing-xs);
 
-	&:hover {
+	&:hover, &:focus, &:active, &.selected {
 		background: var(--highlight-color);
 		color: var(--text-highlight-color);
 		cursor: pointer;
 	}
+	
 }

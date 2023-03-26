@@ -1,55 +1,83 @@
 <script lang="ts">
 	import { visited } from "stores/countries";
 	import { page } from "$app/stores";
+	import { browser } from "$app/environment";
 	import DOMPurify from "isomorphic-dompurify";
 	import type { Country, CountryId } from "ts/countries";
-	import { searchCountries } from "lib/utils/search";
+	import Combobox from "components/ui/Combobox/Combobox.svelte";
+	import type { ComboboxItem } from "components/ui/Combobox/Combobox.svelte";
 
+	// state
 	let visitedCountries: CountryId[] = [];
 	const countryData: { [key: string]: Country } = $page.data.countryData;
+	let comboboxItems: ComboboxItem[] =
+		Object.values(countryData).map((country: Country) => {
+			return {
+				label: country.country_name ?? country.iso2,
+				value: country.iso2,
+				id: country.iso2,
+				searchKeywords: [
+					country?.country_name ?? "",
+					country?.iso2 ?? "",
+					country?.iso3 ?? "",
+					country?.capital_city ?? "",
+					country?.continent ?? "",
+					country?.region_iso2 ?? "",
+					country?.local_name ?? ""
+				]
+			};
+		}) ?? [];
 
 	visited.subscribe((countries) => {
 		visitedCountries = countries;
 	});
 
-	let countryDropdownActive = false;
+	// State of item selection
+	let selectedItemIndex = 0;
+	$: selectedListItem = browser
+		? document.querySelector(`.select-list-item[data-index="${selectedItemIndex}"]`)
+		: null;
 
-	let currentSearchValue: string = "";
-	const handleSearchInput = (event: any) => {
-		currentSearchValue = DOMPurify.sanitize(event.target.value);
+	// Handle selection
+
+	const handleComboboxItemSelect = (event: any, countryCode: string) => {
+		// Add the selected country to the visitedCountries array
+		visitedCountries.push(countryCode);
+
+		// Update the visitedCountries store
+		visited.update((countries) => {
+			const combinedValues = Array.from(new Set([...countries, ...visitedCountries]));
+			return combinedValues;
+		});
 	};
 
-	const handleCountryDropdownItemClick = (event: any) => {
-		console.log(event.target);
+	const handleCountryDropdownKeydown = (event: any) => {
+		// Handle keyboard navigation and selection
+
+		if (event.key === "ArrowDown") {
+			selectedItemIndex += 1;
+		} else if (event.key === "ArrowUp") {
+			selectedItemIndex -= 1;
+		}
+
+		if (selectedListItem) {
+			(selectedListItem as HTMLElement).focus();
+		}
+
+		// else if (event.key === "Enter") {
+
+		// }
 	};
 
-	const handleCountryKeydown = (event: any) => {
-		console.log(event.target);
+	const handleCountryDropdownItemKeydown = (event: any) => {
+		// console.log(event.key);
 	};
 </script>
 
 <div class="map-sidebar">
 	<h2>Visited Countries</h2>
 	<div class="search">
-		<div class="combobox">
-			<input
-				placeholder="Search"
-				on:input={(event) => handleSearchInput(event)}
-				on:focusin={() => (countryDropdownActive = true)}
-				on:focusout={() => (countryDropdownActive = false)}
-			/>
-			<div class={`select-list ${countryDropdownActive ? "active" : ""}`}>
-				{#each searchCountries(Object.values(countryData), currentSearchValue) as country}
-					<div
-						class="select-list-item"
-						on:click={(event) => handleCountryDropdownItemClick}
-						on:keydown={(event) => handleCountryKeydown(event)}
-					>
-						{country.country_name}
-					</div>
-				{/each}
-			</div>
-		</div>
+		<Combobox items={comboboxItems} onItemSelect={handleComboboxItemSelect} />
 	</div>
 	<div class="data">
 		<p>Visited: {visitedCountries.length}</p>
@@ -66,26 +94,7 @@
 <style lang="scss">
 	.map-sidebar {
 		.search {
-			.combobox {
-				position: relative;
-				.select-list {
-					display: none;
-					position: absolute;
-					top: 100%;
-					left: 0;
-					z-index: 1;
-					width: 100%;
-					max-height: 200px;
-					border: 1px solid #ccc;
-					border-radius: 0.25rem;
-					overflow-y: auto;
-					background: #fff;
-
-					&.active {
-						display: block;
-					}
-				}
-			}
+			position: static;
 		}
 	}
 </style>
