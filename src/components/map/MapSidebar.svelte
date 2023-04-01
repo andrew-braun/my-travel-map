@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { visited } from "stores/countries";
 	import { page } from "$app/stores";
-	import { browser } from "$app/environment";
-	import DOMPurify from "isomorphic-dompurify";
+	// import { browser } from "$app/environment";
+	// import DOMPurify from "isomorphic-dompurify";
 	import type { Country, CountryId } from "ts/countries";
 	import Combobox from "components/ui/Combobox/Combobox.svelte";
 	import type { ComboboxItem } from "components/ui/Combobox/Combobox.svelte";
+	import ShareButtons from "components/share/ShareButtons.svelte";
 
 	// state
 	let visitedCountries: CountryId[] = [];
@@ -59,6 +60,7 @@
 
 <div class="map-sidebar">
 	<h2>Visited Countries</h2>
+	<div><ShareButtons /></div>
 	<div class="search">
 		<Combobox items={comboboxItems} onItemSelect={handleComboboxItemSelect} />
 	</div>

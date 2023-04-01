@@ -64,6 +64,8 @@ input {
 	}
 }
 
+/* Global list styles*/
+
 .list-style-1 {
 	padding: 0;
 	list-style: none;
@@ -83,4 +85,17 @@ input {
 		cursor: pointer;
 	}
 	
+}
+
+/* Global button styles */
+button {
+	padding: var(--spacing-xxs) var(--spacing-xs);
+	border: 1px solid black;
+	border-radius: var(--border-radius-xs);
+	cursor: pointer;
+	// transition: var(--ease-in-out-md);
+
+	&:active {
+		transform: scale(0.95);
+	}
 }
