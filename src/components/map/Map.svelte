@@ -44,7 +44,7 @@
 
 		if (!!countries.length) {
 			goto(`?${$page.url.searchParams.toString()}`);
-		} else if (!countries.length && !visitedCountryParam) {
+		} else if (!countries.length) {
 			searchParams.delete("visitedCountries");
 			goto($page.url.origin);
 		}
