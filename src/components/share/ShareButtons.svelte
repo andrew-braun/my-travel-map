@@ -1,15 +1,10 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import LinkBold from "~icons/ph/link-bold";
 	import FacebookLogo from "~icons/ph/facebook-logo";
-	import { visited } from "stores/countries";
 
-	import { browser } from "$app/environment";
-
-	let currentUrl = browser ? window.location.href : "";
-
-	visited.subscribe(() => {
-		currentUrl = window.location.href;
-	});
+	let currentUrl = "";
+	page.subscribe((page) => (currentUrl = page.url.toString()));
 
 	const handleCopyUrlClick = (event: Event) => {
 		const url = window.location.href;
