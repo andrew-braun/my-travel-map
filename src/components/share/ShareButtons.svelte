@@ -32,7 +32,7 @@
 	<a
 		href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
 			currentUrl
-		)}?text=${encodeURIComponent(
+		)}&text=${encodeURIComponent(
 			`I've been to ${visitedCountries.length} countries! How about you?`
 		)}`}
 		class="share-link twitter"
