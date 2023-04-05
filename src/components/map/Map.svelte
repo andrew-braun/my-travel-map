@@ -9,6 +9,7 @@
 	import type { CountryId } from "ts/countries";
 	import "mapbox-gl/dist/mapbox-gl.css";
 	import { visited } from "stores/countries";
+	import { currentMapCanvasURL } from "stores/maps";
 	import { getUrlSearchParam } from "lib/utils/browser";
 
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
@@ -24,6 +25,8 @@
 	let map: Map;
 	let hoveredCountryId: string | number | undefined | null = null;
 	let visitedCountries: CountryId[] = [];
+	let currentImageURL: string = "";
+	$: currentMapCanvasURL.set(currentImageURL);
 
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
@@ -36,6 +39,10 @@
 
 		if (!browser) {
 			return;
+		}
+
+		if (map) {
+			currentImageURL = map.getCanvas().toDataURL("image/png");
 		}
 
 		// If there are countries in the store, update the URL search params
@@ -86,7 +93,8 @@
 			center,
 			zoom,
 			style: `mapbox://styles/mapbox/${style}`,
-			projection: { name: "winkelTripel" }
+			projection: { name: "winkelTripel" },
+			preserveDrawingBuffer: true
 		});
 
 		/* All map manipulations must be included in the async onload function*/
@@ -292,6 +300,8 @@
 </script>
 
 <div class="map-container" id="map-container" />
+
+<a href={`${currentImageURL}`} download="download-static-map-image">Download Map</a>
 
 <style>
 	.map-container {

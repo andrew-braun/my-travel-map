@@ -4,6 +4,7 @@
 	import FacebookLogo from "~icons/ph/facebook-logo";
 	import TwitterLogo from "~icons/ph/twitter-logo";
 	import { visited } from "stores/countries";
+	import { currentMapCanvasURL } from "stores/maps";
 	import type { CountryId } from "ts/countries";
 
 	let visitedCountries: CountryId[] = [];
@@ -14,15 +15,27 @@
 	let currentUrl = "";
 	page.subscribe((page) => (currentUrl = page.url.toString()));
 
+	let mapCanvasURL: string = "";
+	currentMapCanvasURL.subscribe((url) => {
+		mapCanvasURL = url;
+	});
+
 	const handleCopyUrlClick = (event: Event) => {
 		const url = window.location.href;
 		navigator.clipboard.writeText(url);
+	};
+
+	const handleImageDownloadClick = (event: Event) => {
+		// Generate a static mapbox image
 	};
 </script>
 
 <div class="container">
 	<button class="share-button share-link copy-url" on:click={(event) => handleCopyUrlClick(event)}
 		><LinkBold /></button
+	>
+	<a href={`${mapCanvasURL}`} download="download-map" class="share-link facebook" target="_blank"
+		><FacebookLogo /></a
 	>
 	<a
 		href={`https://www.facebook.com/share.php?u=${currentUrl}`}
