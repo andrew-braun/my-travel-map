@@ -28,6 +28,9 @@
 	let currentImageURL: string = "";
 	$: currentMapCanvasURL.set(currentImageURL);
 
+	// Bindings
+	let mapElement: Map;
+
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
 		// Update the visitedCountries URL param with the new list of countries
@@ -300,8 +303,6 @@
 </script>
 
 <div class="map-container" id="map-container" />
-
-<a href={`${currentImageURL}`} download="download-static-map-image">Download Map</a>
 
 <style>
 	.map-container {

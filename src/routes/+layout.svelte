@@ -3,6 +3,8 @@
 	import { onMount } from "svelte";
 	import type { LayoutData } from "./$types";
 
+	import Header from "components/layout/header/Header.svelte";
+
 	import "styles/variables.css";
 	import "styles/global.scss";
 
@@ -21,25 +23,21 @@
 	});
 </script>
 
-<header class="header">
-	<nav>
-		<a href="/">Home</a>
-		<a href="/about">About</a>
-	</nav>
-</header>
+<Header />
 <main class="main">
 	<slot />
 </main>
 <footer class="footer">Made by Andri Braun</footer>
 
-<style>
-	.header {
-		padding: var(--spacing-sm) var(--spacing-md);
-	}
+<style lang="scss">
 	.main {
 		padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
+		max-width: var(--site-width);
+		margin: auto;
 	}
 	.footer {
 		padding: var(--spacing-sm) var(--spacing-md);
+		max-width: var(--site-width);
+		margin: auto;
 	}
 </style>

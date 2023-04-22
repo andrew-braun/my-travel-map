@@ -3,6 +3,7 @@
 	import LinkBold from "~icons/ph/link-bold";
 	import FacebookLogo from "~icons/ph/facebook-logo";
 	import TwitterLogo from "~icons/ph/twitter-logo";
+	import DownloadSimple from "~icons/ph/download-simple";
 	import { visited } from "stores/countries";
 	import { currentMapCanvasURL } from "stores/maps";
 	import type { CountryId } from "ts/countries";
@@ -26,7 +27,7 @@
 	};
 
 	const handleImageDownloadClick = (event: Event) => {
-		// Generate a static mapbox image
+		return;
 	};
 </script>
 
@@ -34,8 +35,12 @@
 	<button class="share-button share-link copy-url" on:click={(event) => handleCopyUrlClick(event)}
 		><LinkBold /></button
 	>
-	<a href={`${mapCanvasURL}`} download="download-map" class="share-link facebook" target="_blank"
-		><FacebookLogo /></a
+	<a
+		href={`${mapCanvasURL}`}
+		download="download-map"
+		class="share-link facebook"
+		target="_blank"
+		on:click={(event) => handleImageDownloadClick(event)}><DownloadSimple /></a
 	>
 	<a
 		href={`https://www.facebook.com/share.php?u=${currentUrl}`}
