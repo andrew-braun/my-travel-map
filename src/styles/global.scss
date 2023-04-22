@@ -1,58 +1,37 @@
 html {
 	font-size: 62.5%;
-	box-sizing: border-box;
 }
+
+@media screen and (max-width: 992px) {
+	html {
+		font-size: 50%;
+	}
+}
+
 *,
 *:before,
 *:after {
 	box-sizing: inherit;
 }
 
-:root {
-	--spacing-xxs: .2rem;
-	--spacing-xs: .6rem;
-	--spacing-sm: 1rem;
-	--spacing-md: 1.6rem;
-	--spacing-lg: 2.2rem
-	--spacing-xl: 3rem;
-	--spacing-xxl: 4rem;
-
-	--gutters: 4rem;
-
-	--border-radius-xs: .2rem;
-	--border-radius-sm: .4rem;
-	--border-radius-md: .8rem;
-	--border-radius-lg: 1.6rem;
-	--border-radius-xl: 2.2rem;
-
-	--primary-background: hsla(204, 19%, 15%, 1);
-	--highlight-color: rebeccapurple;
-
-	--font-size-sm: 1.4rem;
-	--font-size-normal: 1.6rem;
-	--font-size-md: 1.8rem;
-	--font-size-lg: 2.4rem;
-	--font-size-xl: 3.2rem;
-	--font-size-xxl: 3.8rem;
-
-	--body-text-color: hsla( 0, 0%, 95%, 0.95);
-	--text-highlight-color: hsla( 0, 0%, 95%, 0.95);
-
-	--ease-in-out-md: all 0.3s ease-in-out;
-	
-	--site-width: 1920px;
-	
-}
-
 body {
 	font-size: var(--font-size-normal);
+	font-family: var(--body-font);
 	color: var(--body-text-color);
 	margin: 0;
 	background: var(--primary-background);
 }
 
-
 /* Text styles */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--heading-font);
+}
 
 h1 {
 	font-size: var(--font-size-xl);
@@ -78,7 +57,7 @@ input {
 	padding: var(--spacing-xs);
 	border: 1px solid #ccc;
 	border-radius: var(--border-radius-sm);
-	
+
 	&:hover {
 		opacity: 0.9;
 		border: 1px solid var(--highlight-color);
@@ -93,19 +72,20 @@ input {
 
 	li {
 		padding: var(--spacing-xxs);
-
 	}
 }
 
 .selectable-list-item {
 	padding: var(--spacing-xs);
 
-	&:hover, &:focus, &:active, &.selected {
+	&:hover,
+	&:focus,
+	&:active,
+	&.selected {
 		background: var(--highlight-color);
 		color: var(--text-highlight-color);
 		cursor: pointer;
 	}
-	
 }
 
 /* Global button styles */

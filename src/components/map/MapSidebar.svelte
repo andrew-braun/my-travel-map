@@ -51,7 +51,6 @@
 	}
 
 	const handleListItemDeleteClick = (event: Event, id: string) => {
-		console.log(id);
 		deleteListItem(id);
 	};
 
