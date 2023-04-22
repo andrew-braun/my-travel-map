@@ -93,9 +93,10 @@ input {
 
 /* Global button styles */
 button {
-	padding: var(--spacing-xxs) var(--spacing-xs);
-	border: 1px solid black;
+	padding: var(--spacing-xs) var(--spacing-sm);
+	border: 1px solid var(--accent-1);
 	border-radius: var(--border-radius-xs);
+	background: var(--primary-background);
 	cursor: pointer;
 	color: var(--body-text-color);
 	// transition: var(--ease-in-out-md);

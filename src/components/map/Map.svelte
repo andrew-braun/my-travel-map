@@ -9,8 +9,10 @@
 	import type { CountryId } from "ts/countries";
 	import "mapbox-gl/dist/mapbox-gl.css";
 	import { visited } from "stores/countries";
+	import { mapElement } from "stores/maps";
 	import { currentMapCanvasURL } from "stores/maps";
 	import { getUrlSearchParam } from "lib/utils/browser";
+	import { captureSnapshot } from "lib/utils/map";
 
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
 
@@ -29,7 +31,10 @@
 	$: currentMapCanvasURL.set(currentImageURL);
 
 	// Bindings
-	let mapElement: Map;
+
+	let snapshot: HTMLCanvasElement;
+	$: snapshotCtx = snapshot?.getContext("2d");
+	let scale = browser ? window.devicePixelRatio : 1;
 
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
@@ -58,6 +63,8 @@
 			searchParams.delete("visitedCountries");
 			goto($page.url.origin);
 		}
+
+		mapElement.set(map);
 	});
 
 	// Centralize map colors
@@ -195,6 +202,8 @@
 						{ selected: false, visited: false }
 					);
 				}
+
+				mapElement.set(map);
 			});
 
 			/* Create hover effects by manipulating feature states */
@@ -297,16 +306,44 @@
 				 ** to the writable store
 				 */
 				visited.update((countries) => [...visitedCountries]);
+
+				mapElement.set(map);
 			});
+
+			map.on("zoomend", () => {
+				mapElement.set(map);
+			});
+
+			mapElement.set(map);
 		});
+
+		// function setSnapshotProperties() {
+		// 	// const halfWidth = (window.innerWidth / 2) * scale;
+		// 	const windowHeight = window.innerHeight * scale;
+
+		// 	snapshot.height = 1000;
+		// 	snapshot.width = 2000;
+		// }
+		// setSnapshotProperties();
 	});
 </script>
 
-<div class="map-container" id="map-container" />
+<button
+	on:click={() => {
+		captureSnapshot(map, snapshot);
+	}}
+	>Download image
+</button>
 
-<style>
+<div class="map-container" id="map-container" />
+<canvas id="snapshot" class="snapshot-canvas" bind:this={snapshot} />
+
+<style lang="scss">
 	.map-container {
 		width: 100%;
 		height: 540px;
+	}
+	.snapshot-canvas {
+		// display: none;
 	}
 </style>
