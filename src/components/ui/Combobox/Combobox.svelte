@@ -86,25 +86,21 @@
 		.select-list {
 			display: none;
 			position: absolute;
-			top: 45%;
+			top: 50%;
 			left: 0;
 			z-index: 1;
 			width: 100%;
 			max-height: 200px;
-			border: 1px solid #ccc;
+			border: 1px solid var(--accent-1);
 			border-radius: var(--border-radius-sm);
-			background: #fff;
+			padding-right: var(--spacing-sm);
+			background: var(--primary-background);
 			overflow-y: auto;
 
 			&.active {
 				display: block;
 				border-top: none;
 				border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
-			}
-
-			.select-list-item {
-				padding: var(--spacing-xs) var(--spacing-sm);
-				opacity: 0.9;
 			}
 		}
 	}

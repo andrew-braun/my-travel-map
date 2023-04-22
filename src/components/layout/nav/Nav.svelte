@@ -4,20 +4,13 @@
 </nav>
 
 <style lang="scss">
+	@use "src/styles/mixins" as mixins;
 	.nav {
 		display: flex;
 		align-items: center;
 
 		.nav-item {
-			padding: var(--spacing-sm) var(--spacing-md);
-			font-size: var(--font-size-md);
-			border-radius: var(--border-radius-md);
-			transition: var(--ease-in-out-md);
-
-			&:hover {
-				background-color: var(--highlight-color);
-				color: var(--text-highlight-color);
-			}
+			@include mixins.basic-button;
 		}
 	}
 </style>

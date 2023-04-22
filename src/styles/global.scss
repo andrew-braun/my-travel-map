@@ -1,3 +1,5 @@
+@use "./mixins.scss";
+
 html {
 	font-size: 62.5%;
 }
@@ -77,6 +79,7 @@ input {
 
 .selectable-list-item {
 	padding: var(--spacing-xs);
+	transition: var(--ease-in-out-fst);
 
 	&:hover,
 	&:focus,

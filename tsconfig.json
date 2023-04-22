@@ -5,7 +5,9 @@
 		"paths": {
 			"src/*": ["src/*"],
 			"$lib": ["./src/lib"],
-			"$lib/*": ["./src/lib/*"]
+			"$lib/*": ["./src/lib/*"],
+			"$styles": ["./src/styles"],
+			"$styles/*": ["./src/styles/*"]
 			// "$lib/*": ["./src/lib/*"]
 		},
 		"allowJs": true,

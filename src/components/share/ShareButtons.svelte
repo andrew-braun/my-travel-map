@@ -59,15 +59,19 @@
 </div>
 
 <style lang="scss">
+	@use "src/styles/mixins" as mixins;
 	.container {
 		display: flex;
 		align-items: center;
 		padding: var(--spacing-sm) 0;
 
-		.share-button {
+		.share-button,
+		.share-link {
+			@include mixins.basic-button;
+
 			background: none;
 			border: none;
-			padding: 0;
+			padding: var(--spacing-sm);
 			margin: 0;
 		}
 	}

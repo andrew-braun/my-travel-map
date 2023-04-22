@@ -7,6 +7,7 @@
 
 	import "styles/variables.css";
 	import "styles/global.scss";
+	import "styles/mixins.scss";
 
 	export let data: LayoutData;
 

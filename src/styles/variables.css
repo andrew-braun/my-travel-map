@@ -17,6 +17,7 @@
 
 	--primary-background: hsla(204, 19%, 15%, 1);
 	--highlight-color: rebeccapurple;
+	--accent-1: orange;
 
 	--body-font: 'Roboto', sans-serif;
 	--heading-font: 'Roboto', sans-serif;
@@ -31,6 +32,7 @@
 	--body-text-color: hsla( 0, 0%, 95%, 0.95);
 	--text-highlight-color: hsla( 0, 0%, 95%, 0.95);
 
+	--ease-in-out-fst: all 0.15s ease-in-out;
 	--ease-in-out-md: all 0.3s ease-in-out;
 	
 	--site-width: 1920px;
