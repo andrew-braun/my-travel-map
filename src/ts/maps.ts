@@ -17,3 +17,13 @@ export type MapboxCountryBoundaryFeatureProperties = {
 	wikidata_id: string;
 	worldview: string;
 };
+
+export type MapProjection =
+	| "albers"
+	| "equalEarth"
+	| "equirectangular"
+	| "lambertConformalConic"
+	| "mercator"
+	| "naturalEarth"
+	| "winkelTripel"
+	| "globe";

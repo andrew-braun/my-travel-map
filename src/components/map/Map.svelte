@@ -5,14 +5,18 @@
 	import { browser } from "$app/environment";
 	import mapboxgl, { Map } from "mapbox-gl";
 	// import type { MapboxGeoJSONFeature } from "mapbox-gl";
-	import type { MapboxCountryBoundaryFeatureProperties } from "ts/maps";
+
+	import type { MapboxCountryBoundaryFeatureProperties, MapProjection } from "ts/maps";
 	import type { CountryId } from "ts/countries";
-	import "mapbox-gl/dist/mapbox-gl.css";
+
 	import { visited } from "stores/countries";
 	import { mapElement } from "stores/maps";
 	import { currentMapCanvasURL } from "stores/maps";
+
 	import { getUrlSearchParam } from "lib/utils/browser";
-	import { captureSnapshot } from "lib/utils/map";
+	import { captureSnapshot, generateStaticMap } from "lib/utils/map";
+
+	import "mapbox-gl/dist/mapbox-gl.css";
 
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
 
@@ -29,12 +33,11 @@
 	let visitedCountries: CountryId[] = [];
 	let currentImageURL: string = "";
 	$: currentMapCanvasURL.set(currentImageURL);
+	let mapProjection: MapProjection = "winkelTripel";
 
 	// Bindings
 
 	let snapshot: HTMLCanvasElement;
-	$: snapshotCtx = snapshot?.getContext("2d");
-	let scale = browser ? window.devicePixelRatio : 1;
 
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
@@ -54,12 +57,12 @@
 		}
 
 		// If there are countries in the store, update the URL search params
-		const visitedCountryParam = getUrlSearchParam("visitedCountries");
 		const searchParams = new URLSearchParams($page.url.searchParams.toString());
 
 		if (!!countries.length) {
 			goto(`?${$page.url.searchParams.toString()}`);
 		} else if (!countries.length) {
+			// If there are no countries in the store, remove the URL search params
 			searchParams.delete("visitedCountries");
 			goto($page.url.origin);
 		}
@@ -102,8 +105,9 @@
 			container: "map-container",
 			center,
 			zoom,
+			antialias: true,
 			style: `mapbox://styles/mapbox/${style}`,
-			projection: { name: "winkelTripel" },
+			projection: { name: mapProjection },
 			preserveDrawingBuffer: true
 		});
 
@@ -171,7 +175,7 @@
 			 */
 			visited.subscribe((countries) => {
 				for (let country of countries) {
-					// Set the feature state to "selected" and "visited" for each country in the store
+					// Set the feature state to "selected" or "visited" for each country in the store
 					map.setFeatureState(
 						{
 							source: "country-boundaries",
@@ -187,6 +191,7 @@
 					layers: ["country-boundaries-select"]
 				});
 
+				// Make sure that any that are in the store but not the string are deselected
 				const unselected = mapboxFeatureState
 					.filter((feature) => feature.state.selected === true && !countries.includes(feature.id))
 					.map((feature) => feature.id);
@@ -316,21 +321,21 @@
 
 			mapElement.set(map);
 		});
-
-		// function setSnapshotProperties() {
-		// 	// const halfWidth = (window.innerWidth / 2) * scale;
-		// 	const windowHeight = window.innerHeight * scale;
-
-		// 	snapshot.height = 1000;
-		// 	snapshot.width = 2000;
-		// }
-		// setSnapshotProperties();
 	});
 </script>
 
 <button
 	on:click={() => {
-		captureSnapshot(map, snapshot);
+		(async () => captureSnapshot(map, snapshot))();
+		(async () => {
+			const response = await fetch("/api/map/static", {
+				method: "POST",
+				body: JSON.stringify({ a: "a" }),
+				headers: { "content-type": "application/json" }
+			});
+			const data = await response.json();
+			console.log(data);
+		})();
 	}}
 	>Download image
 </button>

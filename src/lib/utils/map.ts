@@ -1,31 +1,66 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import type { Map } from "mapbox-gl";
 
-export function captureSnapshot(map: Map, snapshotElement: HTMLCanvasElement) {
-	if (map.getZoom() > 1) {
-		map.setZoom(1);
-		setTimeout(() => {
-			getImage();
-		}, 100);
+export async function captureSnapshot(map: Map, snapshotElement: HTMLCanvasElement) {
+	return;
+	const canvas: HTMLCanvasElement = map.getCanvas();
+
+	function prepareMap(map: Map) {
+		// Prepare map for taking snapshot.
+		// map.setZoom(1);
+
+		const bounds = map.getBounds();
+		map.fitBounds(bounds, { maxZoom: 1 });
+		map.setCenter([0, 0]);
+
+		map.setBearing(0);
 	}
 
-	function getImage() {
-		const ctx: CanvasRenderingContext2D | null = snapshotElement.getContext("2d");
+	async function getImage(canvas: HTMLCanvasElement, snapshotElement: HTMLCanvasElement) {
+		const snapshotCanvas: CanvasRenderingContext2D | null = snapshotElement.getContext("2d");
 
-		const png = map.getCanvas().toDataURL();
-		const copy = new Image(2400, 1200);
+		const dataUrl = canvas.toDataURL();
+		snapshotElement.width = 2400;
+		snapshotElement.height = 1200;
 
-		copy.src = png;
-		copy.onload = function () {
-			snapshotElement.width = copy.naturalWidth;
-			snapshotElement.height = copy.naturalHeight;
+		const image = new Image(2400, 1200);
+		image.src = dataUrl;
 
-			if (ctx) {
-				ctx.drawImage(copy, 0, 0);
+		image.onload = function () {
+			if (snapshotCanvas) {
+				snapshotCanvas.drawImage(image, 0, 0);
 			}
-			// logo();
-			// textbox();
 		};
+
+		const fetchedImage = await fetch(image.src);
+		const imageBlob = await fetchedImage.blob();
+		const imageUrl = URL.createObjectURL(imageBlob);
+		console.log(imageUrl);
+
+		// Create an anchor element to download the image
+		const downloadLink = document.createElement("a");
+		downloadLink.href = imageUrl.replace(/^data:image\/[^;]/, "data:application/octet-stream");
+		downloadLink.download = "map.png";
+
+		// Trigger a click on the download link to download the image
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+		document.body.removeChild(downloadLink);
 	}
 
-	getImage();
+	prepareMap(map);
+
+	await getImage(canvas, snapshotElement);
+}
+
+export async function generateStaticMap(map: string) {
+	// Only works on the server
+	const mapboxSdk = require("@mapbox/mapbox-sdk");
+
+	const mapboxClient = mapboxSdk({ accessToken: process.env.PUBLIC_MAPBOX_API_KEY });
+
+	console.log(mapboxClient);
+	console.log(map);
+
+	// Generate a static map using an existing mapbox map element
 }
