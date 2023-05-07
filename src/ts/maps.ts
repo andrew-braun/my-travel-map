@@ -27,3 +27,9 @@ export type MapProjection =
 	| "naturalEarth"
 	| "winkelTripel"
 	| "globe";
+
+	export interface MapData {
+		projection: MapProjection;
+		style: string;
+		
+	}

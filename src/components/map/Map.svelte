@@ -11,14 +11,14 @@
 
 	import { visited } from "stores/countries";
 	import { mapElement } from "stores/maps";
-	import { currentMapCanvasURL } from "stores/maps";
 
 	import { getUrlSearchParam } from "lib/utils/browser";
-	import { captureSnapshot, generateStaticMap } from "lib/utils/map";
+	import { generateStaticImage } from "lib/utils/map";
 
 	import "mapbox-gl/dist/mapbox-gl.css";
 
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
+	import { dataset_dev } from "svelte/internal";
 
 	// Props
 	export const center: [number, number] | undefined = [0, 0];
@@ -27,17 +27,18 @@
 
 	const mapAccessToken = PUBLIC_MAPBOX_API_KEY;
 
-	// Initialize map
+	// Map state
 	let map: Map;
 	let hoveredCountryId: string | number | undefined | null = null;
 	let visitedCountries: CountryId[] = [];
-	let currentImageURL: string = "";
-	$: currentMapCanvasURL.set(currentImageURL);
 	let mapProjection: MapProjection = "winkelTripel";
+	
+	let currentZoom = zoom;
+	let currentCenter = center;
 
-	// Bindings
 
-	let snapshot: HTMLCanvasElement;
+	let staticMapUrl: string = "";
+
 
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
@@ -50,10 +51,6 @@
 
 		if (!browser) {
 			return;
-		}
-
-		if (map) {
-			currentImageURL = map.getCanvas().toDataURL("image/png");
 		}
 
 		// If there are countries in the store, update the URL search params
@@ -81,6 +78,14 @@
 	 */
 	let selectionMode: keyof typeof colors = "visited";
 	$: currentSelectionColor = colors[selectionMode];
+
+// Event listeners
+const handleImageGenerateClick = async () => {
+	const staticImage = await generateStaticImage()
+	console.log(staticImage)
+	staticMapUrl = staticImage.mapUrl
+}
+
 
 	onMount(async () => {
 		// Access browser URL search params and, if they contain a list of visited countries, set the visitedCountries store to that list
@@ -325,30 +330,16 @@
 </script>
 
 <button
-	on:click={() => {
-		(async () => captureSnapshot(map, snapshot))();
-		(async () => {
-			const response = await fetch("/api/map/static", {
-				method: "POST",
-				body: JSON.stringify({ a: "a" }),
-				headers: { "content-type": "application/json" }
-			});
-			const data = await response.json();
-			console.log(data);
-		})();
-	}}
+	on:click={() => handleImageGenerateClick()}
 	>Download image
 </button>
 
 <div class="map-container" id="map-container" />
-<canvas id="snapshot" class="snapshot-canvas" bind:this={snapshot} />
+<img src={staticMapUrl} alt="static map" />
 
 <style lang="scss">
 	.map-container {
 		width: 100%;
 		height: 540px;
-	}
-	.snapshot-canvas {
-		// display: none;
 	}
 </style>
