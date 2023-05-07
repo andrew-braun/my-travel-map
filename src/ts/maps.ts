@@ -28,8 +28,6 @@ export type MapProjection =
 	| "winkelTripel"
 	| "globe";
 
-	export interface MapData {
-		projection: MapProjection;
-		style: string;
-		
-	}
+export interface MapData {
+	style: string;
+}

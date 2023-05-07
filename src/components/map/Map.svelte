@@ -6,7 +6,7 @@
 	import mapboxgl, { Map } from "mapbox-gl";
 	// import type { MapboxGeoJSONFeature } from "mapbox-gl";
 
-	import type { MapboxCountryBoundaryFeatureProperties, MapProjection } from "ts/maps";
+	import type { MapboxCountryBoundaryFeatureProperties, MapData, MapProjection } from "ts/maps";
 	import type { CountryId } from "ts/countries";
 
 	import { visited } from "stores/countries";
@@ -81,7 +81,10 @@
 
 // Event listeners
 const handleImageGenerateClick = async () => {
-	const staticImage = await generateStaticImage()
+	const mapData: MapData = {
+		style
+	}
+	const staticImage = await generateStaticImage(mapData)
 	console.log(staticImage)
 	staticMapUrl = staticImage.mapUrl
 }
