@@ -82,11 +82,19 @@
 
 // Event listeners
 const handleImageGenerateClick = async () => {
+	const renderedFeatures = map.queryRenderedFeatures(undefined, {layers: ["country-boundaries-select"]})
+
+	const selectedFeatures = renderedFeatures.filter(feature => feature?.state?.selected).map((feature) => feature.toJSON())
+
+	const selectedFeaturesGeoJSON = {
+		type: "FeatureCollection",
+		features: selectedFeatures
+	}
 	const mapData: MapData = {
 		style
 	}
-	const staticImage = await generateStaticImage(mapData)
 
+	const staticImage = await generateStaticImage({mapData, overlay: selectedFeaturesGeoJSON})
 	const staticImageObject = await fetch(staticImage.url);
 	const staticImageBlob = await staticImageObject.blob();
 	const staticImageBlobUrl = URL.createObjectURL(staticImageBlob);
