@@ -24,9 +24,9 @@ async function generateStaticMap(mapData: MapData) {
 		}
 	});
 
-	const staticImageUrl = staticImageResponse.url();
+	const staticImageUrl = await staticImageResponse.url();
 
-	return staticImageUrl;
+	return { url: staticImageUrl };
 
 	// Generate a static map using an existing mapbox map element
 }
@@ -39,7 +39,7 @@ export async function POST({ request }) {
 		console.log(mapData);
 		const mapUrl = await generateStaticMap(mapData);
 
-		return new Response(String(JSON.stringify({ mapUrl })));
+		return new Response(String(JSON.stringify({ ...mapUrl })));
 	} catch (err) {
 		throw error(500, JSON.stringify(err));
 	}

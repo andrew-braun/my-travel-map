@@ -14,6 +14,7 @@
 
 	import { getUrlSearchParam } from "lib/utils/browser";
 	import { generateStaticImage } from "lib/utils/map";
+	import { downloadBlob } from "lib/utils/image";
 
 	import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -85,9 +86,16 @@ const handleImageGenerateClick = async () => {
 		style
 	}
 	const staticImage = await generateStaticImage(mapData)
-	console.log(staticImage)
-	staticMapUrl = staticImage.mapUrl
-}
+
+	const staticImageObject = await fetch(staticImage.url);
+	const staticImageBlob = await staticImageObject.blob();
+	const staticImageBlobUrl = URL.createObjectURL(staticImageBlob);
+	
+	staticMapUrl = staticImage.url
+
+	downloadBlob(staticImageBlobUrl, "map.png");
+};
+
 
 
 	onMount(async () => {
