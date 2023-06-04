@@ -1,3 +1,4 @@
+import type { GeoJsonOverlay } from "@mapbox/mapbox-sdk/services/static";
 import type { MapData } from "ts/maps";
 
 export async function generateStaticImage({
@@ -5,7 +6,7 @@ export async function generateStaticImage({
 	overlay
 }: {
 	mapData: MapData;
-	overlay: GeoJSON.FeatureCollection;
+	overlay: GeoJsonOverlay[];
 }) {
 	try {
 		const response = await fetch("/api/map/static", {

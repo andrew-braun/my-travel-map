@@ -19,7 +19,7 @@
 	import "mapbox-gl/dist/mapbox-gl.css";
 
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
-	import { dataset_dev } from "svelte/internal";
+	import { dataset_dev, select_options } from "svelte/internal";
 
 	// Props
 	export const center: [number, number] | undefined = [0, 0];
@@ -84,17 +84,15 @@
 const handleImageGenerateClick = async () => {
 	const renderedFeatures = map.queryRenderedFeatures(undefined, {layers: ["country-boundaries-select"]})
 
-	const selectedFeatures = renderedFeatures.filter(feature => feature?.state?.selected).map((feature) => feature.toJSON())
+	const selectedFeatures = renderedFeatures.filter(feature => feature?.state?.selected).map((feature) => { return { geoJson: feature.toJSON()}})
+	console.log(selectedFeatures)
 
-	const selectedFeaturesGeoJSON = {
-		type: "FeatureCollection",
-		features: selectedFeatures
-	}
 	const mapData: MapData = {
 		style
 	}
 
-	const staticImage = await generateStaticImage({mapData, overlay: selectedFeaturesGeoJSON})
+	const staticImage = await generateStaticImage({mapData, overlay: selectedFeatures})
+	console.log(staticImage)
 	const staticImageObject = await fetch(staticImage.url);
 	const staticImageBlob = await staticImageObject.blob();
 	const staticImageBlobUrl = URL.createObjectURL(staticImageBlob);
