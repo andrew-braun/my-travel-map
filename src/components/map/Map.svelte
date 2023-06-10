@@ -13,8 +13,7 @@
 	import { mapElement } from "stores/maps";
 
 	import { getUrlSearchParam } from "lib/utils/browser";
-	import { generateStaticImage } from "lib/utils/map";
-	import { downloadBlob } from "lib/utils/image";
+
 
 	import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -27,6 +26,9 @@
 	export const style: string | undefined = "light-v11";
 
 	const mapAccessToken = PUBLIC_MAPBOX_API_KEY;
+
+// Snapshot state
+let takingSnapshot = false;
 
 	// Map state
 	let map: Map;
@@ -82,21 +84,34 @@
 
 // Event listeners
 const handleImageGenerateClick = async () => {
-	const mapData: MapData = {
-		style
-	}
-	const staticImage = await generateStaticImage(mapData)
+takingSnapshot = true
 
-	const staticImageObject = await fetch(staticImage.url);
-	const staticImageBlob = await staticImageObject.blob();
-	const staticImageBlobUrl = URL.createObjectURL(staticImageBlob);
-	
-	staticMapUrl = staticImage.url
+setTimeout(() => {
+map.resize();
+	map.setZoom(2.9);
+}, 200)
 
-	downloadBlob(staticImageBlobUrl, "map.png");
+
+setTimeout(() => {
+	const mapCanvas = map.getCanvas();
+	const mapCanvasData = mapCanvas.toDataURL("image/png");
+
+	const downloadLink = document.createElement("a");
+	downloadLink.href = mapCanvasData;
+	downloadLink.download = "map.png";
+	downloadLink.click();
+
+	takingSnapshot = false
+}, 800)
+
+setTimeout(() => {
+
+	map.resize()
+}, 1000)
+
+
+
 };
-
-
 
 	onMount(async () => {
 		// Access browser URL search params and, if they contain a list of visited countries, set the visitedCountries store to that list
@@ -120,7 +135,7 @@ const handleImageGenerateClick = async () => {
 		map = new Map({
 			container: "map-container",
 			center,
-			zoom,
+			zoom: 2.9,
 			antialias: true,
 			style: `mapbox://styles/mapbox/${style}`,
 			projection: { name: mapProjection },
@@ -345,12 +360,21 @@ const handleImageGenerateClick = async () => {
 	>Download image
 </button>
 
-<div class="map-container" id="map-container" />
+<div class={`map-container ${takingSnapshot ? "snapshot-container" : ""}`} id="map-container" />
 <img src={staticMapUrl} alt="static map" />
 
 <style lang="scss">
 	.map-container {
 		width: 100%;
 		height: 540px;
+	}
+	.snapshot-container {
+		// background: lavender;
+		position: relative;
+		top: 100px;
+		left: 0;
+		width: 100%;
+		min-width: 4096px;
+		min-height: 2304px;
 	}
 </style>
