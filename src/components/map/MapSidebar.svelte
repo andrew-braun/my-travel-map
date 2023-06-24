@@ -12,22 +12,31 @@
 	let visitedCountries: CountryId[] = [];
 	const countryData: { [key: string]: Country } = $page.data.countryData;
 	let comboboxItems: ComboboxItem[] =
-		Object.values(countryData).map((country: Country) => {
-			return {
-				label: country.country_name ?? country.iso2,
-				value: country.iso2,
-				id: country.iso2,
-				searchKeywords: [
-					country?.country_name ?? "",
-					country?.iso2 ?? "",
-					country?.iso3 ?? "",
-					country?.capital_city ?? "",
-					country?.continent ?? "",
-					country?.region_iso2 ?? "",
-					country?.local_name ?? ""
-				]
-			};
-		}) ?? [];
+		Object.values(countryData)
+			.sort((a, b) => {
+				if (!!a?.country_name && !!b?.country_name) {
+					return a.country_name.localeCompare(b.country_name);
+				} else if (!!a?.iso2 && !!b?.iso2) {
+					return a.iso2.localeCompare(b.iso2);
+				}
+				return 0; // Add a default return value to handle the case when no comparison is made
+			})
+			.map((country: Country) => {
+				return {
+					label: country.country_name ?? country.iso2,
+					value: country.iso2,
+					id: country.iso2,
+					searchKeywords: [
+						country?.country_name ?? "",
+						country?.iso2 ?? "",
+						country?.iso3 ?? "",
+						country?.capital_city ?? "",
+						country?.continent ?? "",
+						country?.region_iso2 ?? "",
+						country?.local_name ?? ""
+					]
+				};
+			}) ?? [];
 
 	visited.subscribe((countries) => {
 		visitedCountries = countries;
