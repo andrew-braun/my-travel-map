@@ -91,7 +91,7 @@
 			z-index: 1;
 			width: 100%;
 			max-height: 200px;
-			border: 1px solid var(--accent-1);
+			border: 1px solid var(--accent-color-1);
 			border-radius: var(--border-radius-sm);
 			padding-right: var(--spacing-sm);
 			background: var(--primary-background);

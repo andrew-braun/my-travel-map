@@ -16,8 +16,10 @@
 	--border-radius-xl: 2.2rem;
 
 	--primary-background: hsla(204, 19%, 15%, 1);
+	--secondary-background: hsla(204, 19%, 85%, 1);
 	--highlight-color: rebeccapurple;
-	--accent-1: orange;
+	--accent-color-1: orange;
+	--accent-color-2: rebeccapurple;
 
 	--body-font: 'Roboto', sans-serif;
 	--heading-font: 'Roboto', sans-serif;

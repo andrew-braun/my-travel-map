@@ -6,6 +6,8 @@
 	import mapboxgl, { Map } from "mapbox-gl";
 	// import type { MapboxGeoJSONFeature } from "mapbox-gl";
 
+	import LoadingAnimationImage from "components/ui/animations/LoadingAnimationImage.svelte";
+
 	import type { MapboxCountryBoundaryFeatureProperties, MapData, MapProjection } from "ts/maps";
 	import type { CountryId } from "ts/countries";
 
@@ -14,11 +16,9 @@
 
 	import { getUrlSearchParam } from "lib/utils/browser";
 
-
 	import "mapbox-gl/dist/mapbox-gl.css";
 
 	import { PUBLIC_MAPBOX_API_KEY } from "$env/static/public";
-	import { dataset_dev } from "svelte/internal";
 
 	// Props
 	export const center: [number, number] | undefined = [0, 0];
@@ -27,21 +27,18 @@
 
 	const mapAccessToken = PUBLIC_MAPBOX_API_KEY;
 
-// Snapshot state
-let takingSnapshot = false;
+	// Snapshot state
+	let takingSnapshot = false;
+	let snapShotComplete = true;
 
 	// Map state
 	let map: Map;
 	let hoveredCountryId: string | number | undefined | null = null;
 	let visitedCountries: CountryId[] = [];
 	let mapProjection: MapProjection = "winkelTripel";
-	
+
 	let currentZoom = zoom;
 	let currentCenter = center;
-
-
-	let staticMapUrl: string = "";
-
 
 	/* Subscribe to writable store event on country selection change */
 	visited.subscribe((countries) => {
@@ -82,36 +79,37 @@ let takingSnapshot = false;
 	let selectionMode: keyof typeof colors = "visited";
 	$: currentSelectionColor = colors[selectionMode];
 
-// Event listeners
-const handleImageGenerateClick = async () => {
-takingSnapshot = true
+	// Event listeners
+	const handleImageGenerateClick = async () => {
+		takingSnapshot = true;
+		snapShotComplete = false;
 
-setTimeout(() => {
-map.resize();
-	map.setZoom(2.9);
-}, 200)
+		// These setTimeouts should probably be replaced by events
 
+		setTimeout(() => {
+			map.resize();
+			map.setZoom(2.9);
+		}, 200);
 
-setTimeout(() => {
-	const mapCanvas = map.getCanvas();
-	const mapCanvasData = mapCanvas.toDataURL("image/png");
+		setTimeout(() => {
+			const mapCanvas = map.getCanvas();
+			const mapCanvasData = mapCanvas.toDataURL("image/png");
 
-	const downloadLink = document.createElement("a");
-	downloadLink.href = mapCanvasData;
-	downloadLink.download = "map.png";
-	downloadLink.click();
+			const downloadLink = document.createElement("a");
+			downloadLink.href = mapCanvasData;
+			downloadLink.download = "map.png";
+			downloadLink.click();
+		}, 800);
 
-	takingSnapshot = false
-}, 800)
+		setTimeout(() => {
+			takingSnapshot = false;
+		}, 900);
 
-setTimeout(() => {
-
-	map.resize()
-}, 1000)
-
-
-
-};
+		setTimeout(() => {
+			map.resize();
+			snapShotComplete = true;
+		}, 1000);
+	};
 
 	onMount(async () => {
 		// Access browser URL search params and, if they contain a list of visited countries, set the visitedCountries store to that list
@@ -133,7 +131,7 @@ setTimeout(() => {
 
 		mapboxgl.accessToken = mapAccessToken;
 		map = new Map({
-			container: "map-container",
+			container: "map",
 			center,
 			zoom: 2.9,
 			antialias: true,
@@ -162,20 +160,17 @@ setTimeout(() => {
 
 			/* The layer includes a paint effect that sets opacity based on the value of
 			 ** hover in feature state, which is set in the onMouseMove and onMouseLeave functions*/
-			map.addLayer(
-				{
-					id: "country-boundaries-hover",
-					type: "fill",
-					source: "country-boundaries",
-					"source-layer": "country_boundaries",
-					filter: worldviewFilter,
-					paint: {
-						"fill-color": colors.hover,
-						"fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0]
-					}
-				},
-				"country-label"
-			);
+			map.addLayer({
+				id: "country-boundaries-hover",
+				type: "fill",
+				source: "country-boundaries",
+				"source-layer": "country_boundaries",
+				filter: worldviewFilter,
+				paint: {
+					"fill-color": colors.hover,
+					"fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0]
+				}
+			});
 
 			/* There might be a more efficient way to persist selected countries separate from hover
 			 ** effects, but this works!
@@ -355,26 +350,64 @@ setTimeout(() => {
 	});
 </script>
 
-<button
-	on:click={() => handleImageGenerateClick()}
-	>Download image
-</button>
+<button on:click={() => handleImageGenerateClick()}>Download image </button>
 
-<div class={`map-container ${takingSnapshot ? "snapshot-container" : ""}`} id="map-container" />
-<img src={staticMapUrl} alt="static map" />
+<div class={`map-container`}>
+	<div
+		class={`map 
+		${!!takingSnapshot ? "snapshot-container" : ""} 
+		${!snapShotComplete ? "snapshot-hidden" : ""}
+		`}
+		id="map"
+	/>
+	{#if takingSnapshot || !snapShotComplete}
+		<div class="loadingAnimation">
+			<LoadingAnimationImage />
+			<p>One moment--our tiny cartographers are hand-drawing your map!</p>
+		</div>
+	{/if}
+</div>
 
 <style lang="scss">
 	.map-container {
+		position: relative;
 		width: 100%;
 		height: 540px;
-	}
-	.snapshot-container {
-		// background: lavender;
-		position: relative;
-		top: 100px;
-		left: 0;
-		width: 100%;
-		min-width: 4096px;
-		min-height: 2304px;
+
+		.map {
+			position: relative;
+			width: 100%;
+			height: 100%;
+
+			&.snapshot-container {
+				// background: lavender;
+				position: relative;
+				top: 100px;
+				left: 0;
+				width: 100%;
+				min-width: 4096px;
+				min-height: 2304px;
+			}
+
+			&.snapshot-hidden {
+				visibility: hidden;
+			}
+		}
+
+		.loadingAnimation {
+			position: absolute;
+			top: 0;
+			left: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			height: 100%;
+			border: 1px solid var(--secondary-background);
+			border-radius: var(--border-radius-md);
+			background-image: linear-gradient(to top, var(--accent-color-2), var(--primary-background));
+			font-size: var(--font-size-md);
+		}
 	}
 </style>
