@@ -18,6 +18,9 @@
 	let filteredResults: ComboboxItem[] = items;
 	let selectedItemIndex: number = 0;
 
+	// bindings
+	let inputBinding: string = "";
+
 	// event handlers
 	const handleSearchInput = (event: Event) => {
 		const target = event.target as HTMLInputElement;
@@ -42,6 +45,7 @@
 	const handleDropdownItemSelect = (event: Event, id: string) => {
 		onItemSelect(event, id);
 		active = false;
+		inputBinding = "";
 	};
 
 	const handleDropdownItemKeydown = (event: Event) => {};
@@ -55,19 +59,22 @@
 		on:click={() => (active = true)}
 		on:focusin={() => (active = true)}
 		on:keydown={(event) => handleKeydown(event)}
+		bind:value={inputBinding}
 	/>
 
 	<ul class={`select-list list-style-1 ${active ? "active" : ""}`}>
 		{#each filteredResults as item, index}
-			<li
-				class="select-list-item selectable-list-item {index === selectedItemIndex
-					? 'selected'
-					: ''}"
-				on:click={(event) => handleDropdownItemSelect(event, item.id)}
-				on:keydown={(event) => handleDropdownItemKeydown(event)}
-				data-index={index}
-			>
-				{item.label}
+			<li>
+				<button
+					class="select-list-item selectable-list-item {index === selectedItemIndex
+						? 'selected'
+						: ''}"
+					on:click={(event) => handleDropdownItemSelect(event, item.id)}
+					on:keydown={(event) => handleDropdownItemKeydown(event)}
+					data-index={index}
+				>
+					{item.label}
+				</button>
 			</li>
 		{/each}
 	</ul>

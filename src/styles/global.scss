@@ -78,8 +78,11 @@ input {
 }
 
 .selectable-list-item {
+	width: 100%;
+	text-align: left;
 	padding: var(--spacing-xs);
 	transition: var(--ease-in-out-fst);
+	border: 0;
 
 	&:hover,
 	&:focus,
