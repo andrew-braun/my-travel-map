@@ -37,6 +37,8 @@
 	let visitedCountries: CountryId[] = [];
 	let mapProjection: MapProjection = "winkelTripel";
 
+	let mapNode: HTMLDivElement;
+
 	let currentZoom = zoom;
 	let currentCenter = center;
 
@@ -87,8 +89,12 @@
 		// These setTimeouts should probably be replaced by events
 
 		setTimeout(() => {
+			takingSnapshot = true;
+			snapShotComplete = false;
+
 			map.resize();
-			map.setZoom(2.9);
+			map.setZoom(1.7);
+			map.setCenter([0, 0]);
 		}, 200);
 
 		setTimeout(() => {
@@ -99,16 +105,24 @@
 			downloadLink.href = mapCanvasData;
 			downloadLink.download = "map.png";
 			downloadLink.click();
-		}, 800);
+		}, 400);
 
 		setTimeout(() => {
 			takingSnapshot = false;
-		}, 900);
+			if (mapNode.classList.contains("snapshot-container")) {
+				mapNode.classList.remove("snapshot-container");
+			}
+			map.resize();
+		}, 800);
+
+		setTimeout(() => {
+			snapShotComplete = true;
+			map.resize();
+		}, 850);
 
 		setTimeout(() => {
 			map.resize();
-			snapShotComplete = true;
-		}, 1000);
+		}, 900);
 	};
 
 	onMount(async () => {
@@ -359,6 +373,7 @@
 		${!snapShotComplete ? "snapshot-hidden" : ""}
 		`}
 		id="map"
+		bind:this={mapNode}
 	/>
 	{#if takingSnapshot || !snapShotComplete}
 		<div class="loadingAnimation">
@@ -380,16 +395,18 @@
 			height: 100%;
 
 			&.snapshot-container {
-				// background: lavender;
 				position: relative;
-				top: 100px;
+				top: 0;
+				right: 0;
+				bottom: 0;
 				left: 0;
 				width: 100%;
-				min-width: 4096px;
-				min-height: 2304px;
+				min-width: 2048px;
+				min-height: 1152px;
 			}
 
 			&.snapshot-hidden {
+				position: fixed;
 				visibility: hidden;
 			}
 		}
