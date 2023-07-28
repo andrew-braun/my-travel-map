@@ -109,13 +109,13 @@
 			linkElement.download = "map.png";
 
 			downloadLink = linkElement;
-		}, 400);
+		}, 600);
 
 		setTimeout(() => {
 			if (downloadLink) {
 				downloadLink.click();
 			}
-		}, 550);
+		}, 650);
 
 		setTimeout(() => {
 			takingSnapshot = false;
@@ -123,16 +123,16 @@
 				mapNode.classList.remove("snapshot-container");
 			}
 			map.resize();
-		}, 800);
+		}, 1000);
 
 		setTimeout(() => {
 			snapShotComplete = true;
 			map.resize();
-		}, 850);
+		}, 1050);
 
 		setTimeout(() => {
 			map.resize();
-		}, 900);
+		}, 1100);
 	};
 
 	onMount(async () => {
