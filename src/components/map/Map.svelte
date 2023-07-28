@@ -83,58 +83,69 @@
 
 	// Event listeners
 	const handleImageGenerateClick = async () => {
-		takingSnapshot = true;
-		snapShotComplete = false;
+		let iterationCount = 0;
 
-		// These setTimeouts should probably be replaced by events
-
-		setTimeout(() => {
+		function takeCanvasSnapshot() {
 			takingSnapshot = true;
 			snapShotComplete = false;
 
-			map.resize();
-			map.setZoom(1.7);
-			map.setCenter([0, 0]);
-		}, 200);
+			// These setTimeouts should probably be replaced by events
 
-		let downloadLink: HTMLAnchorElement | HTMLElement | null = null;
+			setTimeout(() => {
+				takingSnapshot = true;
+				snapShotComplete = false;
 
-		setTimeout(() => {
-			map.resize();
+				map.resize();
+				map.setZoom(1.7);
+				map.setCenter([0, 0]);
+			}, 200);
 
-			const mapCanvas = map.getCanvas();
-			const mapCanvasData = mapCanvas.toDataURL("image/png");
-			console.log(mapCanvasData);
-			const linkElement = document.createElement("a");
-			linkElement.setAttribute("id", "mtmlinkElement");
-			linkElement.href = mapCanvasData;
-			linkElement.download = "map.png";
+			let downloadLink: HTMLAnchorElement | HTMLElement | null = null;
 
-			downloadLink = linkElement;
-		}, 600);
+			setTimeout(() => {
+				map.resize();
 
-		setTimeout(() => {
-			if (downloadLink) {
-				downloadLink.click();
-			}
-		}, 650);
+				const mapCanvas = map.getCanvas();
+				const mapCanvasData = mapCanvas.toDataURL("image/png");
+				console.log(mapCanvasData);
+				const linkElement = document.createElement("a");
+				linkElement.setAttribute("id", "mtmLinkElement");
+				linkElement.href = mapCanvasData;
+				linkElement.download = "map.png";
 
-		setTimeout(() => {
-			takingSnapshot = false;
-			if (mapNode.classList.contains("snapshot-container")) {
-				mapNode.classList.remove("snapshot-container");
-			}
-			map.resize();
-		}, 1000);
+				downloadLink = linkElement;
+			}, 600);
 
-		setTimeout(() => {
-			snapShotComplete = true;
-			map.resize();
-		}, 1050);
+			setTimeout(() => {
+				if (downloadLink && iterationCount > 0) {
+					downloadLink.click();
+				}
+			}, 650);
 
-		setTimeout(() => {
-			map.resize();
-		}, 1100);
+			setTimeout(() => {
+				takingSnapshot = false;
+				if (mapNode.classList.contains("snapshot-container")) {
+					mapNode.classList.remove("snapshot-container");
+				}
+				map.resize();
+			}, 1000);
+
+			setTimeout(() => {
+				snapShotComplete = true;
+				map.resize();
+			}, 1050);
+
+			setTimeout(() => {
+				map.resize();
+
+				if (iterationCount === 0) {
+					iterationCount++;
+					takeCanvasSnapshot();
+				}
+			}, 1100);
+		}
+
+		takeCanvasSnapshot();
 	};
 
 	onMount(async () => {
