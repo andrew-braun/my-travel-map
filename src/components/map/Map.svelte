@@ -100,6 +100,8 @@
 		let downloadLink: HTMLAnchorElement | HTMLElement | null = null;
 
 		setTimeout(() => {
+			map.resize();
+
 			const mapCanvas = map.getCanvas();
 			const mapCanvasData = mapCanvas.toDataURL("image/png");
 
