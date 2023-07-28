@@ -28,8 +28,8 @@
 	const mapAccessToken = PUBLIC_MAPBOX_API_KEY;
 
 	// Snapshot state
-	let takingSnapshot = true;
-	let snapShotComplete = false;
+	let takingSnapshot = false;
+	let snapShotComplete = true;
 
 	// Map state
 	let map: Map;
