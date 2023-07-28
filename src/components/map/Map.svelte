@@ -104,7 +104,7 @@
 
 			const mapCanvas = map.getCanvas();
 			const mapCanvasData = mapCanvas.toDataURL("image/png");
-
+			console.log(mapCanvasData);
 			const linkElement = document.createElement("a");
 			linkElement.setAttribute("id", "mtmlinkElement");
 			linkElement.href = mapCanvasData;
