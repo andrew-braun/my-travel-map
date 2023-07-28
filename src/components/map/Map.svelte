@@ -97,15 +97,25 @@
 			map.setCenter([0, 0]);
 		}, 200);
 
+		let downloadLink: HTMLAnchorElement | HTMLElement | null = null;
+
 		setTimeout(() => {
 			const mapCanvas = map.getCanvas();
 			const mapCanvasData = mapCanvas.toDataURL("image/png");
 
-			const downloadLink = document.createElement("a");
-			downloadLink.href = mapCanvasData;
-			downloadLink.download = "map.png";
-			downloadLink.click();
+			const linkElement = document.createElement("a");
+			linkElement.setAttribute("id", "mtmlinkElement");
+			linkElement.href = mapCanvasData;
+			linkElement.download = "map.png";
+
+			downloadLink = linkElement;
 		}, 400);
+
+		setTimeout(() => {
+			if (downloadLink) {
+				downloadLink.click();
+			}
+		}, 550);
 
 		setTimeout(() => {
 			takingSnapshot = false;
