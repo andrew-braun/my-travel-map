@@ -35,6 +35,10 @@
 		padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 0;
 		max-width: var(--site-width);
 		margin: auto;
+
+		@media (max-width: 768px) {
+			padding: var(--spacing-sm) var(--spacing-md);
+		}
 	}
 	.footer {
 		padding: var(--spacing-sm) var(--spacing-md);

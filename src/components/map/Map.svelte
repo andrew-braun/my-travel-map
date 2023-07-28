@@ -28,8 +28,8 @@
 	const mapAccessToken = PUBLIC_MAPBOX_API_KEY;
 
 	// Snapshot state
-	let takingSnapshot = false;
-	let snapShotComplete = true;
+	let takingSnapshot = true;
+	let snapShotComplete = false;
 
 	// Map state
 	let map: Map;
@@ -427,14 +427,18 @@
 			position: absolute;
 			top: 0;
 			left: 0;
+			right: 0;
+			bottom: 0;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
 			width: 100%;
 			height: 100%;
+			padding: var(--spacing-md);
 			border: 1px solid var(--secondary-background);
 			border-radius: var(--border-radius-md);
+			box-sizing: border-box;
 			background-image: linear-gradient(to top, var(--accent-color-2), var(--primary-background));
 			font-size: var(--font-size-md);
 		}
